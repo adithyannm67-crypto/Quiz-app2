@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizMaster - Your Study Companion</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">📚</span>
+                <span class="logo-text">QuizMaster</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#quizzes" class="nav-link">Quizzes</a>
+                <a href="#analytics" class="nav-link">Analytics</a>
+                <a href="#resources" class="nav-link">Resources</a>
+                <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">🌙</button>
+            </div>
+            <div class="datetime-display">
+                <span id="currentDateTime"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Master Your Exams with QuizMaster</h1>
+            <p class="hero-subtitle">Practice quizzes for JEE, GATE, KEAM, and Classes 11-12</p>
+            <button class="cta-button" onclick="scrollToSection('quizzes')">Start Practicing</button>
+        </div>
+        <div class="hero-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+    </section>
+
+    <!-- Quiz Selection Section -->
+    <section id="quizzes" class="quiz-section">
+        <div class="container">
+            <h2 class="section-title">Choose Your Quiz</h2>
+            
+            <!-- Exam Categories -->
+            <div class="quiz-grid">
+                <div class="quiz-card exam-card" data-quiz="jee">
+                    <div class="quiz-icon">🎓</div>
+                    <h3>JEE</h3>
+                    <p>Joint Entrance Examination</p>
+                    <div class="subject-buttons">
+                        <button class="subject-btn" onclick="startQuiz('jee', 'physics')">Physics</button>
+                        <button class="subject-btn" onclick="startQuiz('jee', 'chemistry')">Chemistry</button>
+                        <button class="subject-btn" onclick="startQuiz('jee', 'mathematics')">Mathematics</button>
+                        <button class="subject-btn mixed" onclick="startQuiz('jee', 'mixed')">Mixed</button>
+                    </div>
+                </div>
+                <div class="quiz-card exam-card" data-quiz="gate">
+                    <div class="quiz-icon">💻</div>
+                    <h3>GATE</h3>
+                    <p>Graduate Aptitude Test</p>
+                    <div class="subject-buttons">
+                        <button class="subject-btn" onclick="startQuiz('gate', 'aptitude')">Aptitude</button>
+                        <button class="subject-btn" onclick="startQuiz('gate', 'technical')">Technical</button>
+                        <button class="subject-btn mixed" onclick="startQuiz('gate', 'mixed')">Mixed</button>
+                    </div>
+                </div>
+                <div class="quiz-card exam-card" data-quiz="keam">
+                    <div class="quiz-icon">📐</div>
+                    <h3>KEAM</h3>
+                    <p>Kerala Engineering Entrance</p>
+                    <div class="subject-buttons">
+                        <button class="subject-btn" onclick="startQuiz('keam', 'physics')">Physics</button>
+                        <button class="subject-btn" onclick="startQuiz('keam', 'chemistry')">Chemistry</button>
+                        <button class="subject-btn" onclick="startQuiz('keam', 'mathematics')">Mathematics</button>
+                        <button class="subject-btn mixed" onclick="startQuiz('keam', 'mixed')">Mixed</button>
+                    </div>
+                </div>
+                <div class="quiz-card exam-card" data-quiz="class11">
+                    <div class="quiz-icon">📖</div>
+                    <h3>Class 11</h3>
+                    <p>CBSE/State Board</p>
+                    <div class="subject-buttons">
+                        <button class="subject-btn" onclick="startQuiz('class11', 'physics')">Physics</button>
+                        <button class="subject-btn" onclick="startQuiz('class11', 'chemistry')">Chemistry</button>
+                        <button class="subject-btn" onclick="startQuiz('class11', 'mathematics')">Mathematics</button>
+                        <button class="subject-btn" onclick="startQuiz('class11', 'biology')">Biology</button>
+                        <button class="subject-btn mixed" onclick="startQuiz('class11', 'mixed')">Mixed</button>
+                    </div>
+                </div>
+                <div class="quiz-card exam-card" data-quiz="class12">
+                    <div class="quiz-icon">🎯</div>
+                    <h3>Class 12</h3>
+                    <p>CBSE/State Board</p>
+                    <div class="subject-buttons">
+                        <button class="subject-btn" onclick="startQuiz('class12', 'physics')">Physics</button>
+                        <button class="subject-btn" onclick="startQuiz('class12', 'chemistry')">Chemistry</button>
+                        <button class="subject-btn" onclick="startQuiz('class12', 'mathematics')">Mathematics</button>
+                        <button class="subject-btn" onclick="startQuiz('class12', 'biology')">Biology</button>
+                        <button class="subject-btn mixed" onclick="startQuiz('class12', 'mixed')">Mixed</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Analytics Dashboard Section -->
+    <section id="analytics" class="analytics-section">
+        <div class="container">
+            <h2 class="section-title">Your Performance Analytics</h2>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <div class="analytics-icon">📊</div>
+                    <h3>Total Quizzes</h3>
+                    <p class="analytics-value" id="totalQuizzes">0</p>
+                </div>
+                <div class="analytics-card">
+                    <div class="analytics-icon">⭐</div>
+                    <h3>Average Score</h3>
+                    <p class="analytics-value" id="averageScore">0%</p>
+                </div>
+                <div class="analytics-card">
+                    <div class="analytics-icon">🔥</div>
+                    <h3>Study Streak</h3>
+                    <p class="analytics-value" id="studyStreak">0 days</p>
+                </div>
+                <div class="analytics-card">
+                    <div class="analytics-icon">🏆</div>
+                    <h3>Best Score</h3>
+                    <p class="analytics-value" id="bestScore">0%</p>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="recent-activity">
+                <h3>Recent Quiz History</h3>
+                <div id="recentQuizzes" class="quiz-history-list">
+                    <p class="empty-state">No quizzes taken yet. Start practicing to see your history!</p>
+                </div>
+            </div>
+            
+            <!-- Performance by Subject -->
+            <div class="subject-performance">
+                <h3>Performance by Subject</h3>
+                <div id="subjectStats" class="subject-stats-grid">
+                    <p class="empty-state">Complete some quizzes to see your subject-wise performance!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section id="resources" class="resources-section">
+        <div class="container">
+            <h2 class="section-title">Study Resources</h2>
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <div class="resource-icon">📋</div>
+                    <h3>Cheat Sheets</h3>
+                    <ul class="resource-list">
+                        <li><a href="#" target="_blank">Physics Formulas</a></li>
+                        <li><a href="#" target="_blank">Chemistry Reactions</a></li>
+                        <li><a href="#" target="_blank">Math Theorems</a></li>
+                        <li><a href="#" target="_blank">Biology Concepts</a></li>
+                    </ul>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon">📚</div>
+                    <h3>Textbooks</h3>
+                    <ul class="resource-list">
+                        <li><a href="#" target="_blank">NCERT Physics</a></li>
+                        <li><a href="#" target="_blank">NCERT Chemistry</a></li>
+                        <li><a href="#" target="_blank">NCERT Mathematics</a></li>
+                        <li><a href="#" target="_blank">NCERT Biology</a></li>
+                    </ul>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon">🎥</div>
+                    <h3>Video Lectures</h3>
+                    <ul class="resource-list">
+                        <li><a href="#" target="_blank">Khan Academy</a></li>
+                        <li><a href="#" target="_blank">MIT OpenCourseWare</a></li>
+                        <li><a href="#" target="_blank">NPTEL Lectures</a></li>
+                        <li><a href="#" target="_blank">Crash Courses</a></li>
+                    </ul>
+                </div>
+                <div class="resource-card">
+                    <div class="resource-icon">📝</div>
+                    <h3>Previous Papers</h3>
+                    <ul class="resource-list">
+                        <li><a href="#" target="_blank">JEE Main Papers</a></li>
+                        <li><a href="#" target="_blank">GATE Papers</a></li>
+                        <li><a href="#" target="_blank">KEAM Papers</a></li>
+                        <li><a href="#" target="_blank">Board Exam Papers</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 QuizMaster. All rights reserved.</p>
+            <p>Happy Learning! 🚀</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
