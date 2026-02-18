@@ -585,4 +585,181 @@ function updateAnalytics() {
     
     // Study streak
     const streak = calculateStudyStreak();
-    document.getElementById('studyStreak').textContent =
+    document.getElementById('studyStreak').textContent = streak + (streak === 1 ? ' day' : ' days');
+    
+    // Recent quizzes
+    displayRecentQuizzes(quizHistory);
+    
+    // Subject performance
+    displaySubjectPerformance(quizHistory);
+}
+
+function calculateStudyStreak() {
+    const quizHistory = JSON.parse(localStorage.getItem('quizHistory') || '[]');
+    if (quizHistory.length === 0) return 0;
+    
+    // Sort by date descending
+    const sorted = quizHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    let streak = 0;
+    let currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    
+    for (let quiz of sorted) {
+        const quizDate = new Date(quiz.date);
+        quizDate.setHours(0, 0, 0, 0);
+        
+        const diffDays = Math.floor((currentDate - quizDate) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === streak) {
+            streak++;
+        } else if (diffDays > streak) {
+            break;
+        }
+    }
+    
+    return streak;
+}
+
+function displayRecentQuizzes(history) {
+    const container = document.getElementById('recentQuizzes');
+    
+    if (history.length === 0) {
+        container.innerHTML = '<p class="empty-state">No quizzes taken yet. Start practicing to see your history!</p>';
+        return;
+    }
+    
+    // Show last 5 quizzes
+    const recent = history.slice(-5).reverse();
+    
+    container.innerHTML = recent.map(quiz => {
+        const scoreClass = quiz.percentage >= 80 ? 'excellent' : 
+                          quiz.percentage >= 60 ? 'good' : 
+                          quiz.percentage >= 40 ? 'average' : 'poor';
+        
+        const date = new Date(quiz.date).toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        return `
+            <div class="quiz-history-item">
+                <div class="quiz-info">
+                    <h4>${quiz.exam.toUpperCase()} - ${quiz.subject}</h4>
+                    <p>${date} • ${quiz.correct}/${quiz.total} correct • ${quiz.timeTaken}</p>
+                </div>
+                <div class="quiz-score ${scoreClass}">${quiz.percentage}%</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function displaySubjectPerformance(history) {
+    const container = document.getElementById('subjectStats');
+    
+    if (history.length === 0) {
+        container.innerHTML = '<p class="empty-state">Complete some quizzes to see your subject-wise performance!</p>';
+        return;
+    }
+    
+    // Group by subject
+    const subjectData = {};
+    history.forEach(quiz => {
+        const key = `${quiz.exam}-${quiz.subject}`;
+        if (!subjectData[key]) {
+            subjectData[key] = {
+                exam: quiz.exam,
+                subject: quiz.subject,
+                totalQuizzes: 0,
+                totalCorrect: 0,
+                totalQuestions: 0,
+                avgPercentage: 0
+            };
+        }
+        subjectData[key].totalQuizzes++;
+        subjectData[key].totalCorrect += quiz.correct;
+        subjectData[key].totalQuestions += quiz.total;
+    });
+    
+    // Calculate averages
+    Object.values(subjectData).forEach(data => {
+        data.avgPercentage = Math.round((data.totalCorrect / data.totalQuestions) * 100);
+    });
+    
+    container.innerHTML = Object.values(subjectData).map(data => `
+        <div class="subject-stat-card">
+            <h4>📚 ${data.exam.toUpperCase()} - ${data.subject}</h4>
+            <div class="stat-row">
+                <span class="stat-label">Quizzes Taken:</span>
+                <span class="stat-value">${data.totalQuizzes}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Questions Attempted:</span>
+                <span class="stat-value">${data.totalQuestions}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Correct Answers:</span>
+                <span class="stat-value">${data.totalCorrect}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Average Score:</span>
+                <span class="stat-value">${data.avgPercentage}%</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Update analytics on page load
+updateAnalytics();
+
+// Smooth scroll to section
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    section.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Navigation active state
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+        const target = this.getAttribute('href').substring(1);
+        scrollToSection(target);
+    });
+});
+
+// Start quiz in new window with subject selection
+function startQuiz(exam, subject = 'mixed') {
+    // Open quiz in new window with appropriate size
+    const width = 1000;
+    const height = 800;
+    const left = (screen.width - width) / 2;
+    const top = (screen.height - height) / 2;
+    
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`;
+    window.open(`quiz-window.html?exam=${exam}&subject=${subject}`, '_blank', features);
+}
+
+// Add animation on scroll
+function animateOnScroll() {
+    const elements = document.querySelectorAll('.quiz-card, .resource-card');
+    
+    elements.forEach(element => {
+        const elementTop = element.getBoundingClientRect().top;
+        const elementBottom = element.getBoundingClientRect().bottom;
+        
+        if (elementTop < window.innerHeight && elementBottom > 0) {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }
+    });
+}
+
+// Initialize animations
+window.addEventListener('scroll', animateOnScroll);
+window.addEventListener('load', () => {
+    animateOnScroll();
+});
